@@ -22,6 +22,10 @@ jobs:
           channel: 'stable'
           cache: true
           
+      - name: Get Flutter dependencies
+        run: flutter pub get
+        working-directory: frontend
+          
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

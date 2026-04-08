@@ -11,7 +11,12 @@ def build_windows():
     print("🚀 Starting Offline Windows Build Packager...")
     os.makedirs(RELEASES_DIR, exist_ok=True)
     
+    print(f"📍 Current Directory: {os.getcwd()}")
+    print(f"📁 Frontend Contents: {os.listdir(FRONTEND_DIR)}")
+    
     print("💻 Building Desktop App for Windows...")
+    # Get dependencies first
+    subprocess.run(["flutter", "pub", "get"], cwd=FRONTEND_DIR, check=True)
     subprocess.run(["flutter", "build", "windows"], cwd=FRONTEND_DIR, check=True)
     
     ui_build_dir = os.path.join(FRONTEND_DIR, "build", "windows", "x64", "runner", "Release")

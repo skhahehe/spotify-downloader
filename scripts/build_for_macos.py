@@ -15,15 +15,15 @@ def build_macos():
     bundle_name = "SpotifySmartDownloader.app"
     desktop_bundle_dir = os.path.join(RELEASES_DIR, bundle_name)
     
-    print("🧹 Cleaning up old build locks and processes...")
-    subprocess.run(["pkill", "-f", "SpotifySmartDownloader"], check=False)
-    subprocess.run(["pkill", "-f", "main.py"], check=False)
-    subprocess.run(["killall", "flutter", "xcodebuild", "dart"], check=False, stderr=subprocess.DEVNULL)
+    print(f"📍 Current Directory: {os.getcwd()}")
+    print(f"📁 Frontend Contents: {os.listdir(FRONTEND_DIR)}")
     
     print("💻 Building Desktop App for macOS...")
     try:
-        # 0. Clean build to ensure no stale assets
+        # 0. Clean and Get Dependencies
+        print("  Cleaning and fetching dependencies...")
         subprocess.run(["flutter", "clean"], cwd=FRONTEND_DIR, check=True)
+        subprocess.run(["flutter", "pub", "get"], cwd=FRONTEND_DIR, check=True)
         # 1. New build
         subprocess.run(["flutter", "build", "macos"], cwd=FRONTEND_DIR, check=True)
     except subprocess.CalledProcessError as e:

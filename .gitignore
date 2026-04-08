@@ -61,3 +61,6 @@ Thumbs.db
 
 # Releases
 releases/
+
+# Problematic deep symlinks in Linux runtime
+runtimes/linux/python/share/terminfo/

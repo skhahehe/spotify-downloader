@@ -16,8 +16,8 @@ def build_windows():
     
     print("Building Desktop App for Windows...")
     # Get dependencies first
-    subprocess.run(["flutter", "pub", "get"], cwd=FRONTEND_DIR, check=True)
-    subprocess.run(["flutter", "build", "windows"], cwd=FRONTEND_DIR, check=True)
+    subprocess.run(["flutter", "pub", "get"], cwd=FRONTEND_DIR, check=True, shell=True)
+    subprocess.run(["flutter", "build", "windows"], cwd=FRONTEND_DIR, check=True, shell=True)
     
     ui_build_dir = os.path.join(FRONTEND_DIR, "build", "windows", "x64", "runner", "Release")
     bundle_name = "SpotifySmartDownloader-Windows"

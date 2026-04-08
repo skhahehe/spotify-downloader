@@ -1,18 +1,19 @@
 # Python
-__pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 env/
-build/
-develop-eggs/
 dist/
 downloads/
-eggs/
-.eggs/
-# lib/ removed to allow Flutter source
-# lib64/ removed
+# Ignore specific python lib folders but allow frontend/lib
+runtimes/*/python/lib/
+runtimes/*/python/Lib/
+bin/macos/ffmpeg
+bin/macos/ffprobe
+bin/windows/ffmpeg.exe
+bin/windows/ffprobe.exe
 parts/
 sdist/
 var/

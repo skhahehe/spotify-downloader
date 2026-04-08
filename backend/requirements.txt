@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+yt-dlp
+mutagen
+rapidfuzz
+requests
+python-multipart
+selenium>=4.11.2
+aiofiles

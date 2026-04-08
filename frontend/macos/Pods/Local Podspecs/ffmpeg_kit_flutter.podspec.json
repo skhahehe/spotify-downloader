@@ -1,0 +1,240 @@
+{
+  "name": "ffmpeg_kit_flutter",
+  "version": "4.5.1",
+  "summary": "FFmpeg Kit for Flutter",
+  "description": "A Flutter plugin for running FFmpeg and FFprobe commands.",
+  "homepage": "https://github.com/tanersener/ffmpeg-kit",
+  "license": {
+    "file": "../LICENSE"
+  },
+  "authors": {
+    "Taner Sener": "tanersener@gmail.com"
+  },
+  "platforms": {
+    "osx": null
+  },
+  "requires_arc": true,
+  "static_framework": true,
+  "source": {
+    "path": "."
+  },
+  "source_files": "Classes/**/*",
+  "public_header_files": "Classes/**/*.h",
+  "default_subspecs": "https",
+  "dependencies": {
+    "FlutterMacOS": []
+  },
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES"
+  },
+  "subspecs": [
+    {
+      "name": "min",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-min": [
+          "4.5.1"
+        ]
+      },
+      "platforms": {
+        "osx": "10.15"
+      }
+    },
+    {
+      "name": "min-lts",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-min": [
+          "4.5.1.LTS"
+        ]
+      },
+      "platforms": {
+        "osx": "10.12"
+      }
+    },
+    {
+      "name": "min-gpl",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-min-gpl": [
+          "4.5.1"
+        ]
+      },
+      "platforms": {
+        "osx": "10.15"
+      }
+    },
+    {
+      "name": "min-gpl-lts",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-min-gpl": [
+          "4.5.1.LTS"
+        ]
+      },
+      "platforms": {
+        "osx": "10.12"
+      }
+    },
+    {
+      "name": "https",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-https": [
+          "4.5.1"
+        ]
+      },
+      "platforms": {
+        "osx": "10.15"
+      }
+    },
+    {
+      "name": "https-lts",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-https": [
+          "4.5.1.LTS"
+        ]
+      },
+      "platforms": {
+        "osx": "10.12"
+      }
+    },
+    {
+      "name": "https-gpl",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-https-gpl": [
+          "4.5.1"
+        ]
+      },
+      "platforms": {
+        "osx": "10.15"
+      }
+    },
+    {
+      "name": "https-gpl-lts",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-https-gpl": [
+          "4.5.1.LTS"
+        ]
+      },
+      "platforms": {
+        "osx": "10.12"
+      }
+    },
+    {
+      "name": "audio",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-audio": [
+          "4.5.1"
+        ]
+      },
+      "platforms": {
+        "osx": "10.15"
+      }
+    },
+    {
+      "name": "audio-lts",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-audio": [
+          "4.5.1.LTS"
+        ]
+      },
+      "platforms": {
+        "osx": "10.12"
+      }
+    },
+    {
+      "name": "video",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-video": [
+          "4.5.1"
+        ]
+      },
+      "platforms": {
+        "osx": "10.15"
+      }
+    },
+    {
+      "name": "video-lts",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-video": [
+          "4.5.1.LTS"
+        ]
+      },
+      "platforms": {
+        "osx": "10.12"
+      }
+    },
+    {
+      "name": "full",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-full": [
+          "4.5.1"
+        ]
+      },
+      "platforms": {
+        "osx": "10.15"
+      }
+    },
+    {
+      "name": "full-lts",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-full": [
+          "4.5.1.LTS"
+        ]
+      },
+      "platforms": {
+        "osx": "10.12"
+      }
+    },
+    {
+      "name": "full-gpl",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-full-gpl": [
+          "4.5.1"
+        ]
+      },
+      "platforms": {
+        "osx": "10.15"
+      }
+    },
+    {
+      "name": "full-gpl-lts",
+      "source_files": "Classes/**/*",
+      "public_header_files": "Classes/**/*.h",
+      "dependencies": {
+        "ffmpeg-kit-macos-full-gpl": [
+          "4.5.1.LTS"
+        ]
+      },
+      "platforms": {
+        "osx": "10.12"
+      }
+    }
+  ]
+}

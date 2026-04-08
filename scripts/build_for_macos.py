@@ -15,10 +15,10 @@ def build_macos():
     bundle_name = "SpotifySmartDownloader.app"
     desktop_bundle_dir = os.path.join(RELEASES_DIR, bundle_name)
     
-    print(f"📍 Current Directory: {os.getcwd()}")
-    print(f"📁 Frontend Contents: {os.listdir(FRONTEND_DIR)}")
+    print(f"Location: {os.getcwd()}")
+    print(f"Frontend: {os.listdir(FRONTEND_DIR)}")
     
-    print("💻 Building Desktop App for macOS...")
+    print("Building Desktop App for macOS...")
     try:
         # 0. Clean and Get Dependencies
         print("  Cleaning and fetching dependencies...")

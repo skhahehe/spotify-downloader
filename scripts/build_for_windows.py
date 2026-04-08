@@ -8,13 +8,13 @@ RELEASES_DIR = os.path.join(PROJECT_ROOT, "releases")
 FRONTEND_DIR = os.path.join(PROJECT_ROOT, "frontend")
 
 def build_windows():
-    print("🚀 Starting Offline Windows Build Packager...")
+    print("--- Starting Offline Windows Build Packager ---")
     os.makedirs(RELEASES_DIR, exist_ok=True)
     
-    print(f"📍 Current Directory: {os.getcwd()}")
-    print(f"📁 Frontend Contents: {os.listdir(FRONTEND_DIR)}")
+    print(f"Location: {os.getcwd()}")
+    print(f"Frontend: {os.listdir(FRONTEND_DIR)}")
     
-    print("💻 Building Desktop App for Windows...")
+    print("Building Desktop App for Windows...")
     # Get dependencies first
     subprocess.run(["flutter", "pub", "get"], cwd=FRONTEND_DIR, check=True)
     subprocess.run(["flutter", "build", "windows"], cwd=FRONTEND_DIR, check=True)

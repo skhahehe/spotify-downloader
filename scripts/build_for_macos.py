@@ -8,7 +8,7 @@ RELEASES_DIR = os.path.join(PROJECT_ROOT, "releases")
 FRONTEND_DIR = os.path.join(PROJECT_ROOT, "frontend")
 
 def build_macos():
-    print("🚀 Starting Offline Mac Build Packager...")
+    print(" Starting Offline Mac Build Packager...")
     os.makedirs(RELEASES_DIR, exist_ok=True)
     
     # 1. Aggressive Lock Cleanup
@@ -27,13 +27,13 @@ def build_macos():
         # 1. New build
         subprocess.run(["flutter", "build", "macos"], cwd=FRONTEND_DIR, check=True)
     except subprocess.CalledProcessError as e:
-        print(f"❌ FATAL ERROR: Flutter build failed: {e}")
+        print(f" FATAL ERROR: Flutter build failed: {e}")
         return # STOP the build here
     
     ui_build_dir = os.path.join(FRONTEND_DIR, "build", "macos", "Build", "Products", "Release", "Spotify Smart Downloader.app")
     
     if os.path.exists(desktop_bundle_dir):
-        print(f"♻️  Removing old bundle: {desktop_bundle_dir}")
+        print(f"  Removing old bundle: {desktop_bundle_dir}")
         shutil.rmtree(desktop_bundle_dir, ignore_errors=True)
         if os.path.exists(desktop_bundle_dir):
             subprocess.run(["rm", "-rf", desktop_bundle_dir], check=False)
@@ -49,7 +49,7 @@ def build_macos():
     # helper for component check
     def check_exists(path, name):
         if not os.path.exists(path):
-            print(f"❌ ERROR: Mandatory component missing: {name} at {path}")
+            print(f" ERROR: Mandatory component missing: {name} at {path}")
             return False
         return True
 
@@ -58,7 +58,7 @@ def build_macos():
     try:
         subprocess.run(["pip3", "install", "-r", os.path.join(PROJECT_ROOT, "backend", "requirements.txt"), "--target", os.path.join(PROJECT_ROOT, "vendor")], check=True)
     except Exception as e:
-        print(f"⚠️ Warning: Dependency refresh failed: {e}. Continuing with existing vendor folder.")
+        print(f" Warning: Dependency refresh failed: {e}. Continuing with existing vendor folder.")
 
     # 2. Backend Code
     shutil.copytree(os.path.join(PROJECT_ROOT, "backend"), os.path.join(backend_env_dir, "backend"))
@@ -67,7 +67,7 @@ def build_macos():
     if os.path.exists(os.path.join(PROJECT_ROOT, "vendor")):
         shutil.copytree(os.path.join(PROJECT_ROOT, "vendor"), os.path.join(backend_env_dir, "vendor"))
     else:
-        print("⚠️ Warning: 'vendor' directory not found. Backend may crash if dependencies are missing.")
+        print(" Warning: 'vendor' directory not found. Backend may crash if dependencies are missing.")
     
     # 3. Python Runtime
     runtime_src = os.path.join(PROJECT_ROOT, "runtimes", "macos", "python")
@@ -111,9 +111,9 @@ def build_macos():
         f.write("./runtimes/macos/python/bin/python3 ./backend/main.py --desktop\n")
     os.chmod(launcher_path, 0o755)
 
-    print(f"✅ Desktop payload completely embedded into {bundle_name}")
+    print(f" Desktop payload completely embedded into {bundle_name}")
     
-    print("🔒 Fix permissions...")
+    print(" Fix permissions...")
     # Ensure the main executable is executable
     os.chmod(os.path.join(desktop_bundle_dir, "Contents", "MacOS", "Spotify Smart Downloader"), 0o755)
     
@@ -122,7 +122,7 @@ def build_macos():
     subprocess.run(["chmod", "-R", "755", os.path.join(backend_env_dir, "runtimes", "macos", "python")], check=True)
     subprocess.run(["chmod", "-R", "755", os.path.join(backend_env_dir, "bin", "macos")], check=True)
 
-    print("🖋  Re-signing the .app bundle ad-hoc...")
+    print("  Re-signing the .app bundle ad-hoc...")
     try:
         # First sign internal frameworks and dylibs in the Python runtime
         python_lib_dir = os.path.join(backend_env_dir, "runtimes", "macos", "python", "lib")
@@ -140,9 +140,9 @@ def build_macos():
         # Finally sign the whole app bundle
         print("  Signing main application bundle...")
         subprocess.run(["codesign", "--force", "--deep", "--sign", "-", desktop_bundle_dir], check=True)
-        print("✅ App successfully re-signed and ready for offline use.")
+        print(" App successfully re-signed and ready for offline use.")
     except Exception as e:
-        print(f"⚠️ Warning: Code signing encountered issues: {e}")
+        print(f" Warning: Code signing encountered issues: {e}")
         print("App may still fail to open due to security policies.")
 
 if __name__ == "__main__":

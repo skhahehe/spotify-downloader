@@ -41,7 +41,7 @@ def build_windows():
     if os.path.exists(os.path.join(PROJECT_ROOT, "vendor")):
         shutil.copytree(os.path.join(PROJECT_ROOT, "vendor"), os.path.join(backend_env_dir, "vendor"))
     else:
-        print("⚠️ Warning: 'vendor' directory not found. Backend may crash if dependencies are missing.")
+        print("Warning: 'vendor' directory not found. Backend may crash if dependencies are missing.")
     
     os.makedirs(os.path.join(backend_env_dir, "runtimes", "windows"), exist_ok=True)
     os.makedirs(os.path.join(backend_env_dir, "bin", "windows"), exist_ok=True)
@@ -55,7 +55,7 @@ def build_windows():
         for f in os.listdir(bin_src):
             shutil.copy(os.path.join(bin_src, f), os.path.join(backend_env_dir, "bin", "windows"))
 
-    print(f"✅ Desktop payload completely embedded into {bundle_name}")
+    print(f"Done: Desktop payload completely embedded into {bundle_name}")
 
 if __name__ == "__main__":
     build_windows()

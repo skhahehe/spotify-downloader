@@ -1,29 +1,29 @@
 # Python
-**/__pycache__/
+__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 env/
+venv/
+backend/venv/
 dist/
 downloads/
-# Ignore specific python lib folders but allow frontend/lib
-runtimes/*/python/lib/
-runtimes/*/python/Lib/
-bin/macos/ffmpeg
-bin/macos/ffprobe
-bin/windows/ffmpeg.exe
-bin/windows/ffprobe.exe
+*.egg-info/
+.installed.cfg
+*.egg
+auth.json
+backend/auth.json
+.env
+
+# Dependencies & Runtimes
+vendor/
+runtimes/
+bin/
 parts/
 sdist/
 var/
 wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-backend/venv/
-backend/auth.json
-.env
 
 # Flutter/Dart
 .dart_tool/
@@ -37,7 +37,7 @@ build/
 frontend/build/
 frontend/.idea/
 frontend/.dart_tool/
-frontend/pubspec.lock
+pubspec.lock
 
 # Logs and Temp
 logs/*
@@ -62,6 +62,3 @@ Thumbs.db
 
 # Releases
 releases/
-
-# Problematic deep symlinks in Linux runtime
-runtimes/linux/python/share/terminfo/

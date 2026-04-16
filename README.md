@@ -1,5 +1,6 @@
 # 🎵 Spotify Smart Downloader
-
+# Note: This is like a proof of concept. for educational demonstration of how scraping and metadata can work to achieve something like this. I,Sarmad Durrani by no means promote or support piracy. 
+You are liable for your own actions
 A powerful, cross-platform Spotify downloader that allows you to download tracks, albums, and playlists directly to your device with metadata and album art.
 
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)

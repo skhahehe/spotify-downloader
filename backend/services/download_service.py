@@ -21,6 +21,9 @@ class DownloadService:
             'quiet': True,
             'no_warnings': True,
             'noprogress': True,
+            'socket_timeout': 20,
+            'retries': 5,
+            'fragment_retries': 5,
             'ffmpeg_location': ffmpeg_location,
             'prefer_ffmpeg': True,
             'postprocessors': []

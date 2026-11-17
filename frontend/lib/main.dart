@@ -190,7 +190,7 @@ class AppState extends ChangeNotifier {
       int retries = 0;
       while (!success && retries < 15) {
         try {
-          await api.setConfig(downloadPath: downloadPath, concurrency: concurrency);
+          await api.setConfig(downloadPath: downloadPath, concurrency: concurrency, chromePath: prefs.getString('chrome_path'));
           success = true;
           print("✅ Backend configured successfully after ${retries} retries");
         } catch (e) {
@@ -219,6 +219,7 @@ class AppState extends ChangeNotifier {
       downloadPath: prefs.getString('download_path'), 
       concurrency: concurrency ?? prefs.getInt('concurrency'),
       minConfidence: minConfidence ?? prefs.getInt('min_confidence') ?? 70,
+      chromePath: prefs.getString('chrome_path'),
     );
     isConfigured = true;
     notifyListeners();

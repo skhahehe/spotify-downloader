@@ -11,7 +11,7 @@ class ApiService {
     print("📡 ApiService: Global Base URL updated to $_baseUrl");
   }
 
-  Future<void> setConfig({String? downloadPath, String? format, int? concurrency, int? minConfidence}) async {
+  Future<void> setConfig({String? downloadPath, String? format, int? concurrency, int? minConfidence, String? chromePath}) async {
     final response = await http.post(
       Uri.parse('$baseUrl/config'),
       headers: {'Content-Type': 'application/json'},
@@ -20,6 +20,7 @@ class ApiService {
         'format': format ?? 'mp3',
         'concurrency': concurrency ?? 3,
         'min_confidence': minConfidence ?? 70,
+        'chrome_path': chromePath,
       }),
     ).timeout(const Duration(seconds: 5));
     if (response.statusCode != 200) {

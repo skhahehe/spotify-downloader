@@ -15,6 +15,9 @@ class Track {
   String? downloadedMb;
   String? totalMb;
 
+  bool get isFailed => status == 'failed' || status == 'error';
+  bool get isActive => const {'queued', 'searching', 'downloading', 'processing', 'tagging'}.contains(status);
+
   Track({
     required this.id,
     required this.title,

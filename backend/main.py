@@ -86,14 +86,6 @@ class AppState:
 
 state = AppState()
 
-async def prefetch_youtube_results(track_info):
-    track_id = track_info['id']
-    if track_id in state.search_cache: return
-    try:
-        results = await asyncio.to_thread(state.youtube.search_and_rank, track_info, limit=5)
-        state.search_cache[track_id] = results
-    except: pass
-
 async def download_worker_func(track_info, manual_url=None):
     track_id = track_info['id']
     # 0. Initial Status Pulse
@@ -106,8 +98,13 @@ async def download_worker_func(track_info, manual_url=None):
     elif track_id in state.search_cache:
         candidates = state.search_cache[track_id]
     else:
-        candidates = await asyncio.to_thread(state.youtube.search_and_rank, track_info, limit=5)
-        state.search_cache[track_id] = candidates
+        try:
+            candidates = await asyncio.to_thread(state.youtube.search_and_rank, track_info, limit=5)
+        except Exception as e:
+            print(f"⚠️ YouTube search failed for {track_info['title']}: {e}")
+            candidates = []
+        if candidates:  # don't cache failures, so a retry searches again
+            state.search_cache[track_id] = candidates
 
     if not candidates:
         download_progress_callback(track_id, "failed", 0.0)
@@ -194,9 +191,11 @@ class SpotifyConfig(BaseModel):
     format: Optional[str] = "mp3"
     concurrency: Optional[int] = 3
     min_confidence: Optional[int] = 70
+    chrome_path: Optional[str] = None  # empty/None = use Selenium-managed Chrome for Testing
 
 @app.post("/config")
 async def update_config(config: SpotifyConfig):
+    state.spotify.chrome_path = config.chrome_path or None
     if config.download_path:
         state.downloader.output_dir = Path(config.download_path)
     if config.format:
@@ -280,8 +279,8 @@ async def get_playlist(url: str, custom_name: str = None):
             if t['status'] in ['pending', 'failed']:
                 # Set initial queued status
                 download_progress_callback(t['id'], "queued", 0.0)
-                # Background tasks for active tracks
-                asyncio.create_task(prefetch_youtube_results(t))
+                # No bulk prefetch: searching every track at once starved the download threads and got rate-limited.
+                # Each worker searches right before it downloads; /search covers manual review on demand.
                 await state.queue.add_task(t['id'], t)
             
         print(f"📊 Sending full list of {len(return_list)} tracks to UI")

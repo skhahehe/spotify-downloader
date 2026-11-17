@@ -37,7 +37,7 @@ def get_binary_path(name: str) -> str:
     return str(bundled_path.absolute())
 
 def ensure_dependencies():
-    """Auto-detect and download yt-dlp and ffmpeg/ffprobe if missing."""
+    """Auto-detect and download yt-dlp and ffmpeg/ffprobe if missing, and keep yt-dlp updated."""
     if is_android():
         return True
         
@@ -102,6 +102,17 @@ def ensure_dependencies():
             except Exception as e:
                 print(f"❌ Error downloading {component}: {e}")
 
+    # 3. Keep yt-dlp updated, in the background so startup and downloads never wait on it
+    if ytdlp_path.exists():
+        import subprocess, threading
+        def _update():
+            try:
+                subprocess.run([str(ytdlp_path), "-U"], capture_output=True, timeout=60)
+                print("🔄 yt-dlp update check done.")
+            except Exception as e:
+                print(f"⚠️ Failed to update yt-dlp: {e}")
+        threading.Thread(target=_update, daemon=True).start()
+
     return True
 
 def get_ffmpeg_path():
@@ -110,15 +121,6 @@ def get_ffmpeg_path():
 def get_ytdlp_path():
     return get_binary_path("yt-dlp")
 
-def ensure_dependencies():
-    """Download deps and keep yt-dlp updated."""
-    p = Path(get_ytdlp_path())
-    if p.exists():
-        try:
-            import subprocess
-            subprocess.run([str(p), "-U"], capture_output=True, timeout=10)
-        except: pass
-    return True
 
 if __name__ == "__main__":
     ensure_dependencies()

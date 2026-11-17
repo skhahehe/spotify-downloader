@@ -13,7 +13,8 @@ class YouTubeService:
             'noprogress': True,
             'format': 'bestaudio/best',
             'ignoreerrors': True,
-            'source_address': '0.0.0.0'
+            'source_address': '0.0.0.0',
+            'socket_timeout': 15,  # a hung request used to block a worker forever
         }
 
     def search_and_rank(self, track_info, limit=5):
@@ -24,20 +25,24 @@ class YouTubeService:
             search_query = f"ytsearch{limit}:{query}"
             result = ydl.extract_info(search_query, download=False)
             
-            if 'entries' not in result:
+            if not result or 'entries' not in result:
                 return []
                 
             ranked_results = []
             for entry in result['entries']:
-                if not entry: continue
+                if not entry or not entry.get('url'): continue
+                # Flat search results can carry None for these; normalise once so scoring never crashes
+                entry['title'] = entry.get('title') or ''
+                entry['uploader'] = entry.get('uploader') or entry.get('channel') or ''
+                entry['duration'] = entry.get('duration') or 0
                 
                 score = self.calculate_score(track_info, entry)
                 ranked_results.append({
                     'id': entry['id'],
                     'title': entry['title'],
                     'url': entry['url'],
-                    'duration_s': int(entry.get('duration', 0)),
-                    'channel': entry.get('uploader', ''),
+                    'duration_s': int(entry['duration']),
+                    'channel': entry['uploader'],
                     'confidence': score,
                     'type': self.detect_type(entry)
                 })
@@ -57,7 +62,7 @@ class YouTubeService:
         )
         
         # 3. Duration Score (VERY HIGH WEIGHT)
-        target_s = target['duration_ms'] / 1000
+        target_s = (target.get('duration_ms') or 0) / 1000
         candidate_s = candidate.get('duration', 0)
         if candidate_s == 0:
             diff = 999

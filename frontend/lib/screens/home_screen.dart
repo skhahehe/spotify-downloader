@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,29 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// Standard install location first; otherwise ask the user to locate Chrome.
+  Future<String?> _findOrPickChrome() async {
+    final candidates = Platform.isMacOS
+        ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome']
+        : Platform.isWindows
+            ? [
+                for (final v in ['PROGRAMFILES', 'PROGRAMFILES(X86)', 'LOCALAPPDATA'])
+                  if (Platform.environment[v] != null) '${Platform.environment[v]}\\Google\\Chrome\\Application\\chrome.exe'
+              ]
+            : <String>[];
+    for (final c in candidates) {
+      if (File(c).existsSync()) return c;
+    }
+    final picked = await FilePicker.platform.pickFiles(dialogTitle: 'Locate Google Chrome');
+    String? path = picked?.files.single.path;
+    // macOS: user picks the .app bundle; the real binary lives inside it
+    if (path != null && path.endsWith('.app')) {
+      final name = path.split('/').last.replaceAll('.app', '');
+      path = '$path/Contents/MacOS/$name';
+    }
+    return path;
+  }
+
   void _onPaste() async {
     if (_urlController.text.trim().isEmpty) return;
     
@@ -52,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
         format: _format,
         concurrency: state.prefs.getInt('concurrency') ?? 3,
         minConfidence: int.tryParse(_accuracyController.text) ?? 70,
+        chromePath: state.prefs.getString('chrome_path'),
       );
       
       await state.fetchPlaylist(
@@ -129,6 +154,25 @@ class _HomeScreenState extends State<HomeScreen> {
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(border: OutlineInputBorder()),
                             ),
+                          ),
+                        ),
+                        const Divider(),
+                        ListTile(
+                          title: const Text("Use my installed Chrome"),
+                          subtitle: Text(state.prefs.getString('chrome_path') ?? "Off: using the app's own browser"),
+                          trailing: Switch(
+                            value: state.prefs.getString('chrome_path') != null,
+                            onChanged: (on) async {
+                              if (on) {
+                                final path = await _findOrPickChrome();
+                                if (path == null) return;
+                                await state.prefs.setString('chrome_path', path);
+                              } else {
+                                await state.prefs.remove('chrome_path');
+                              }
+                              await state.saveConfig();
+                              if (context.mounted) Navigator.pop(context);
+                            },
                           ),
                         ),
                         const Divider(),

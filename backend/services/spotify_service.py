@@ -9,10 +9,20 @@ from selenium.webdriver.chrome.options import Options
 class SpotifyService:
     def __init__(self):
         self.driver = None
+        self.chrome_path = None  # None = Selenium-managed Chrome for Testing; else user's own Chrome binary
 
     def _init_driver(self):
         print("🔧 Initializing Selenium Driver...")
         options = Options()
+        if self.chrome_path:
+            if not os.path.isfile(self.chrome_path):
+                raise RuntimeError(f"Chrome not found at {self.chrome_path}. Pick it again in Settings or turn off 'Use my installed Chrome'.")
+            options.binary_location = self.chrome_path
+            os.environ.pop("SE_FORCE_BROWSER_DOWNLOAD", None)
+        else:
+            # Selenium Manager downloads Chrome for Testing once into ~/.cache/selenium, ignoring any installed Chrome
+            os.environ["SE_FORCE_BROWSER_DOWNLOAD"] = "true"
+            options.browser_version = "stable"
         # Headless by default for the .app bundle experience
         if os.environ.get("HEADLESS", "1") == "1":
             options.add_argument("--headless=new")
@@ -48,7 +58,8 @@ class SpotifyService:
             # Fallback/Diagnostic: Try to find chrome binary if it's missing from path
             if "executable needs to be in PATH" in str(e):
                 print("💡 Hint: Chrome or ChromeDriver might not be in the system PATH.")
-            raise RuntimeError(f"Could not start Chrome. Please ensure Google Chrome is installed. Error: {e}")
+            hint = "Check the Chrome path in Settings." if self.chrome_path else "First run needs internet to download the browser (~200 MB)."
+            raise RuntimeError(f"Could not start Chrome. {hint} Error: {e}")
         
     def _close_driver(self):
         if self.driver:

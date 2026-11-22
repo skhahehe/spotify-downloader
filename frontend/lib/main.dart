@@ -68,11 +68,24 @@ Future<void> _spawnBackend({
   _log("Working Directory: $workingDir");
 
   try {
-    _backendProcess = await Process.start(
-      'sh',
-      [launcherScript],
-      workingDirectory: workingDir,
-    );
+    if (Platform.isWindows) {
+      // Windows has no `sh`: run the bundled python directly with the same env launch_backend.app.sh sets
+      _backendProcess = await Process.start(
+        p.join(workingDir, 'runtimes', 'windows', 'python', 'python.exe'),
+        [p.join('backend', 'main.py'), '--desktop'],
+        workingDirectory: workingDir,
+        environment: {
+          'PYTHONPATH': '.;${p.join('.', 'vendor')}',
+          'PATH': '${p.join(workingDir, 'bin', 'windows')};${Platform.environment['PATH'] ?? ''}',
+        },
+      );
+    } else {
+      _backendProcess = await Process.start(
+        'sh',
+        [launcherScript],
+        workingDirectory: workingDir,
+      );
+    }
     print("🚀 Backend spawned with PID: ${_backendProcess?.pid}");
     
     // Stream backend output directly to our unified log

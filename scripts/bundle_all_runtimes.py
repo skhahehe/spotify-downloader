@@ -83,7 +83,10 @@ def install_pip_deps(python_target_dir, os_name):
 def main():
     print("🚀 Starting Zero-Dependency Runtime Bundler...")
     
+    wanted = sys.argv[1:] or list(RUNTIMES)  # e.g. `bundle_all_runtimes.py macos` to fetch one platform only
     for os_name, urls in RUNTIMES.items():
+        if os_name not in wanted:
+            continue
         print(f"\n--- Platform: {os_name} ---")
         
         runtime_dir = os.path.join(PROJECT_ROOT, "runtimes", os_name)
@@ -129,7 +132,7 @@ def main():
             
         install_pip_deps(python_target_dir, os_name)
         
-    print("\n✅ Bundling complete for Windows, Linux, and macOS!")
+    print(f"\n✅ Bundling complete for {', '.join(wanted)}!")
 
 if __name__ == "__main__":
     main()

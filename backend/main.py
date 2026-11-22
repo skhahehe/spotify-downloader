@@ -20,10 +20,12 @@ print(f"🚀 [VER: parallel-pipeline-2.5] Initializing Parallel Architecture..."
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
 LOGS_DIR = PROJECT_ROOT / "logs"
+if not os.access(PROJECT_ROOT, os.W_OK):  # macOS runs downloaded apps from a read-only translocated copy
+    LOGS_DIR = Path.home() / ".spotify_smart_downloader" / "logs"
 VENDOR_DIR = PROJECT_ROOT / "vendor"
 
 # Ensure runtime directories exist
-LOGS_DIR.mkdir(exist_ok=True)
+LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Add bundled dependencies and project root to sys.path
 sys.path.insert(0, str(PROJECT_ROOT)) # Project root
@@ -375,7 +377,7 @@ if __name__ == "__main__":
     
     if bin_path.exists():
         print(f"🔧 Adding binaries to PATH: {bin_path}")
-        os.environ["PATH"] = f"{bin_path}:{os.environ.get('PATH', '')}"
+        os.environ["PATH"] = f"{bin_path}{os.pathsep}{os.environ.get('PATH', '')}"
     
     # Aggressive Cleanup: Kill anything on port 17017
     print(f"🧹 Cleaning up port {port}...")

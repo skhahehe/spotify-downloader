@@ -74,7 +74,7 @@ def ensure_dependencies():
     
     plat_suffixes = {
         "macos": "osx-64",
-        "windows": "windows-64",
+        "windows": "win-64",
         "linux": "linux-64"
     }
 

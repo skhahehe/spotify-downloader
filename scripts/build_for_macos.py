@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
@@ -28,7 +29,7 @@ def build_macos():
         subprocess.run(["flutter", "build", "macos"], cwd=FRONTEND_DIR, check=True)
     except subprocess.CalledProcessError as e:
         print(f" FATAL ERROR: Flutter build failed: {e}")
-        return # STOP the build here
+        sys.exit(1)
     
     ui_build_dir = os.path.join(FRONTEND_DIR, "build", "macos", "Build", "Products", "Release", "Spotify Smart Downloader.app")
     
@@ -39,7 +40,7 @@ def build_macos():
             subprocess.run(["rm", "-rf", desktop_bundle_dir], check=False)
             
     print("  Copying compiled Flutter UI into releases...")
-    shutil.copytree(ui_build_dir, desktop_bundle_dir)
+    shutil.copytree(ui_build_dir, desktop_bundle_dir, symlinks=True)  # keep framework Versions/Current symlinks or codesign rejects them
     
     backend_env_dir = os.path.join(desktop_bundle_dir, "Contents", "Resources", "BackendEnv")
     os.makedirs(backend_env_dir, exist_ok=True)
@@ -53,12 +54,24 @@ def build_macos():
             return False
         return True
 
+    # 0. runtimes/ and bin/ are gitignored, so a fresh checkout (CI) has neither: fetch them
+    runtime_python = os.path.join(PROJECT_ROOT, "runtimes", "macos", "python", "bin", "python3")
+    if not os.path.exists(runtime_python) or not os.path.exists(os.path.join(PROJECT_ROOT, "bin", "macos", "yt-dlp")):
+        print("  Fetching bundled Python runtime and yt-dlp...")
+        subprocess.run([sys.executable, os.path.join(SCRIPT_DIR, "bundle_all_runtimes.py"), "macos"], check=True)
+    sys.path.insert(0, PROJECT_ROOT)
+    from backend.services.dep_manager import ensure_dependencies
+    ensure_dependencies()  # ffmpeg/ffprobe into bin/macos if missing
+
     # 1. Dependency Refresh
     print("  Refreshing vendor dependencies from requirements.txt...")
     try:
-        subprocess.run(["pip3", "install", "-r", os.path.join(PROJECT_ROOT, "backend", "requirements.txt"), "--target", os.path.join(PROJECT_ROOT, "vendor")], check=True)
+        # Install with the bundled Python so compiled wheels match its version/arch (host pip may be 3.9/arm64)
+        subprocess.run([runtime_python, "-m", "pip", "install", "-r", os.path.join(PROJECT_ROOT, "backend", "requirements.txt"), "--target", os.path.join(PROJECT_ROOT, "vendor")], check=True)
     except Exception as e:
         print(f" Warning: Dependency refresh failed: {e}. Continuing with existing vendor folder.")
+        if not os.path.isdir(os.path.join(PROJECT_ROOT, "vendor")):
+            sys.exit(1)
 
     # 2. Backend Code
     shutil.copytree(os.path.join(PROJECT_ROOT, "backend"), os.path.join(backend_env_dir, "backend"))
@@ -79,9 +92,9 @@ def build_macos():
         # Verify python bin exists in destination
         python_bin_dest = os.path.join(runtime_dest, "bin", "python3")
         if not check_exists(python_bin_dest, "Python Binary (in bundle)"):
-            return # Exit build
+            sys.exit(1)
     else:
-        return # Exit build
+        sys.exit(1)
     
     # 4. Binaries (FFmpeg, ffprobe, yt-dlp)
     os.makedirs(os.path.join(backend_env_dir, "bin", "macos"), exist_ok=True)
@@ -95,7 +108,7 @@ def build_macos():
         check_exists(os.path.join(backend_env_dir, "bin", "macos", "ffprobe"), "ffprobe")
         check_exists(os.path.join(backend_env_dir, "bin", "macos", "yt-dlp"), "yt-dlp")
     else:
-        return # Exit build
+        sys.exit(1)
 
     # 1. Dependency Refresh (Handled earlier, this is just a placeholder to keep the code structure clean)
     
@@ -135,7 +148,8 @@ def build_macos():
         print("  Signing helper binaries (ffmpeg/yt-dlp)...")
         for b in ["ffmpeg", "ffprobe", "yt-dlp"]:
             b_path = os.path.join(backend_env_dir, "bin", "macos", b)
-            subprocess.run(["codesign", "--force", "--sign", "-", b_path], check=True)
+            if os.path.exists(b_path):  # a missing helper must not abort signing the whole bundle
+                subprocess.run(["codesign", "--force", "--sign", "-", b_path], check=True)
 
         # Finally sign the whole app bundle
         print("  Signing main application bundle...")
